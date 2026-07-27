@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro Médico San Agustín - Sistema de Gestión de Resultados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Script de Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- BARRA SUPERIOR CON TIEMPO REAL Y LOGO INSTITUCIONAL -->
+        <header class="main-header">
+            <div class="header-left">
+                <div id="relojRealTime" class="real-time">Cargando fecha y hora...</div>
+            </div>
+            <div class="header-right">
+                <div class="logo-container">
+                    <div class="logo-text-group">
+                        <span class="logo-line">Centro Médico</span>
+                        <span class="logo-line">San Agustín</span>
+                    </div>
+                    <div class="logo-box-img">
+                        <img src="logo.png" alt="Logo Centro Médico San Agustín" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="logo-fallback" style="display:none;">C</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SECCIÓN DE INFORMACIÓN INSTITUCIONAL -->
+        <section class="hero-section">
+            <span class="lema">"Salud con calidad, calidez y compromiso"</span>
+            <h1>Sistema de Gestión de Resultados de Laboratorio</h1>
+            <p class="ubicacion-text">📍 Calle 14 Carrera 19 N° 81, Barrio Alto Prado - Fonseca, La Guajira</p>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>🕒 Horarios de Atención</h3>
+                    <p><strong>Centro Médico San Agustín:</strong> Lunes a viernes de 6:30 a.m. a 12:00 p.m. y de 2:00 p.m. a 5:00 p.m.</p>
+                    <p style="margin-top: 6px;"><strong>Entrega de Resultados:</strong> Lunes a viernes de 3:00 p.m. a 5:00 p.m.</p>
+                    <p style="margin-top: 6px;"><strong>Oficina Sanitas:</strong> Lunes a viernes de 7:00 a.m. a 3:00 p.m.</p>
+                </div>
+                <div class="info-card">
+                    <h3>🩺 Nuestros Servicios</h3>
+                    <ul>
+                        <li>Medicina General</li>
+                        <li>Odontología y Odontopediatría</li>
+                        <li>Ortodoncia</li>
+                        <li>Nutrición y Dietética</li>
+                        <li>Citología</li>
+                        <li>Exámenes Clínicos y Especializados (Nivel I y II)</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h3>🤝 Atención y Alianzas</h3>
+                    <p>Trato humano y precios accesibles. Público en general, afiliados de Sanitas y Colsanitas.</p>
+                    <a href="https://wa.me/573045294700" target="_blank" class="whatsapp-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                        Agenda tu cita (WhatsApp)
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- MÓDULO DE INICIO DE SESIÓN -->
+        <section class="portal-section">
+            <div class="login-card">
+                <h2>Portal de Resultados</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="tipoUsuario">Tipo de Usuario</label>
+                        <select id="tipoUsuario" required>
+                            <option value="paciente">Paciente</option>
+                            <option value="medico">Médico</option>
+                            <option value="empresa">Empresa</option>
+                            <option value="sede">Sede</option>
+                            <option value="admin">Administrativo</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="usuario">Número de Documento / Usuario</label>
+                        <input type="text" id="usuario" placeholder="Ingrese su usuario o documento" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" placeholder="Ingrese su contraseña" required>
+                    </div>
+
+                    <!-- Casilla de "No soy un robot" de Google -->
+                    <div class="input-group" style="margin-bottom: 15px; display: flex; justify-content: center;">
+                        <div class="g-recaptcha" data-sitekey="6Ld-XXXXX_TU_SITE_KEY_AQUI"></div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Iniciar Sesión / Consultar</button>
+                </form>
+            </div>
+
+            <div id="resultadoContainer" class="resultado-container hidden">
+                <h3 style="margin-bottom: 15px; font-size: 1.15rem; color: var(--primary-green); font-weight: 700;">Resultados Encontrados</h3>
+                <div id="listaResultados"></div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Centro Médico San Agustín Ltda. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
