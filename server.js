@@ -43,6 +43,23 @@ let resultadosDB = [
 // RUTAS DE LA API (ENDPOINTS)
 // ==========================================
 
+// Obtener la lista completa de resultados
+app.get('/api/resultados', (req, res) => {
+    res.json({ success: true, resultados: resultadosDB });
+});
+
+// Eliminar un resultado por su ID
+app.delete('/api/resultados/:id', (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const existe = resultadosDB.some(r => r.id === id);
+
+    if (!existe) {
+        return res.status(404).json({ success: false, mensaje: 'Resultado no encontrado.' });
+    }
+
+    resultadosDB = resultadosDB.filter(r => r.id !== id);
+    res.json({ success: true, mensaje: 'Resultado eliminado correctamente.' });
+});
 // Healthcheck para plataformas de despliegue (Railway, Render, etc.)
 app.get('/api/health', (req, res) => {
     res.status(200).json({
