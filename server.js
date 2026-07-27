@@ -27,7 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // BASES DE DATOS SIMULADAS EN MEMORIA
 // ==========================================
 let usuariosDB = [
-    { id: 1, usuario: 'admin', password: '123', nombre: 'Administrador General', rol: 'Panel Administrativo', estado: 'Activo' },
+    { id: 1, usuario: 'admin', password: '1223', nombre: 'Administrador General', rol: 'Panel Administrativo', estado: 'Activo' },
     { id: 2, usuario: 'medico1', password: '123', nombre: 'Dr. Carlos Mendoza', rol: 'Médico', estado: 'Activo' },
     { id: 3, usuario: 'empresa1', password: '123', nombre: 'Constructora del Norte', rol: 'Empresa', estado: 'Activo' },
     { id: 4, usuario: 'sede1', password: '123', nombre: 'Sede Principal Fonseca', rol: 'Sede', estado: 'Activo' },
