@@ -88,11 +88,11 @@ app.post('/api/consultar', async (req, res, next) => {
 
         // C. Buscar usuario exacto
         const usuarioEncontrado = usuariosDB.find(u => 
-            u.usuario.toLowerCase() === usuario.toLowerCase()
+            u.usuario.toString().toLowerCase() === usuario.toString().toLowerCase()
         );
 
-        // D. Validar credenciales
-        if (!usuarioEncontrado || usuarioEncontrado.password !== password) {
+        // D. Validar credenciales (Normalizando ambos a String)
+        if (!usuarioEncontrado || usuarioEncontrado.password.toString() !== password.toString()) {
             return res.status(401).json({ 
                 success: false, 
                 mensaje: 'Credenciales inválidas. Usuario o contraseña incorrectos.' 
@@ -103,58 +103,59 @@ app.post('/api/consultar', async (req, res, next) => {
         let menu = [];
         let rolActivo = usuarioEncontrado.rol;
 
-        switch (rolActivo) {
-            case 'Panel Administrativo':
-                menu = [
-                    '🏠 Inicio',
-                    '👥 Gestión de Usuarios',
-                    '🔒 Roles y permisos',
-                    '📤 Subir resultados en PDF',
-                    '📄 Descargar resultados en PDF',
-                    '👨‍⚕️ Médicos',
-                    '⚙️ Configuración y sistema',
-                    '🚪 Cerrar sesión'
-                ];
-                break;
+        // Soporte unificado para 'Administrativo' y 'Panel Administrativo'
+        if (rolActivo === 'Panel Administrativo' || rolActivo === 'Administrativo' || tipoUsuario === 'Administrativo') {
+            menu = [
+                '🏠 Inicio',
+                '👥 Gestión de Usuarios',
+                '🔒 Roles y permisos',
+                '📤 Subir resultados en PDF',
+                '📄 Descargar resultados en PDF',
+                '👨‍⚕️ Médicos',
+                '⚙️ Configuración y sistema',
+                '🚪 Cerrar sesión'
+            ];
+        } else {
+            switch (rolActivo) {
+                case 'Médico':
+                    menu = [
+                        '🏠 Inicio',
+                        '📅 Citas y Agenda',
+                        '📄 Resultados de Pacientes',
+                        '👤 Mi perfil',
+                        '🚪 Cerrar sesión'
+                    ];
+                    break;
 
-            case 'Médico':
-                menu = [
-                    '🏠 Inicio',
-                    '📅 Citas y Agenda',
-                    '📄 Resultados de Pacientes',
-                    '👤 Mi perfil',
-                    '🚪 Cerrar sesión'
-                ];
-                break;
+                case 'Empresa':
+                case 'Sede':
+                    menu = [
+                        '🏠 Inicio',
+                        '🏢 Red de Sedes y Empresas',
+                        '📄 Resultados Ocupacionales',
+                        '🚪 Cerrar sesión'
+                    ];
+                    break;
 
-            case 'Empresa':
-            case 'Sede':
-                menu = [
-                    '🏠 Inicio',
-                    '🏢 Red de Sedes y Empresas',
-                    '📄 Resultados Ocupacionales',
-                    '🚪 Cerrar sesión'
-                ];
-                break;
-
-            case 'Paciente':
-            default:
-                menu = [
-                    '🏠 Inicio',
-                    '📄 Descargar resultados en PDF',
-                    '👤 Mi perfil: Actualizar sus datos',
-                    '🔔 Notificaciones',
-                    '🚪 Cerrar sesión'
-                ];
-                break;
+                case 'Paciente':
+                default:
+                    menu = [
+                        '🏠 Inicio',
+                        '📄 Descargar resultados en PDF',
+                        '👤 Mi perfil: Actualizar sus datos',
+                        '🔔 Notificaciones',
+                        '🚪 Cerrar sesión'
+                    ];
+                    break;
+            }
         }
 
-        // F. Filtrar exámene si el usuario es Paciente
+        // F. Filtrar exámenes si el usuario es Paciente
         let resultadosFiltrados = resultadosDB;
         if (rolActivo === 'Paciente') {
             resultadosFiltrados = resultadosDB.filter(r => 
-                r.pacienteDoc.toLowerCase().includes(usuario.toLowerCase()) ||
-                r.numeroDoc === usuario
+                r.pacienteDoc.toLowerCase().includes(usuario.toString().toLowerCase()) ||
+                r.numeroDoc === usuario.toString()
             );
         }
 
@@ -188,7 +189,7 @@ app.post('/api/usuarios', (req, res) => {
         });
     }
 
-    const usuarioExistente = usuariosDB.find(u => u.usuario.toLowerCase() === usuario.toLowerCase());
+    const usuarioExistente = usuariosDB.find(u => u.usuario.toString().toLowerCase() === usuario.toString().toLowerCase());
     if (usuarioExistente) {
         return res.status(400).json({
             success: false,
