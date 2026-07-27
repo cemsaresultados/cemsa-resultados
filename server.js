@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuración de clave secreta de reCAPTCHA
-const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || 'TU_CLAVE_SECRETA_DE_GOOGLE';
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '6LfJ1GctAAAAALZ2-Uj9vpfRcmCYRVrAO93OAzol';
 
 // ==========================================
 // MIDDLEWARES GLOBALES
