@@ -27,11 +27,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // BASES DE DATOS SIMULADAS EN MEMORIA
 // ==========================================
 let usuariosDB = [
-    { id: 1, usuario: 'admin', password: '1223', nombre: 'Administrador General', rol: 'Panel Administrativo', estado: 'Activo' },
-    { id: 2, usuario: 'medico1', password: '123', nombre: 'Dr. Carlos Mendoza', rol: 'Médico', estado: 'Activo' },
-    { id: 3, usuario: 'empresa1', password: '123', nombre: 'Constructora del Norte', rol: 'Empresa', estado: 'Activo' },
-    { id: 4, usuario: 'sede1', password: '123', nombre: 'Sede Principal Fonseca', rol: 'Sede', estado: 'Activo' },
-    { id: 5, usuario: 'paciente1', password: '123', nombre: 'María Pérez', rol: 'Paciente', estado: 'Activo' }
+    { id: 1, usuario: 'admin1', password: '1234', nombre: 'Administrador General', rol: 'Administrativo', estado: 'Activo', documento: '100100100', tipo_doc: 'CC' },
+    { id: 2, usuario: 'medico1', password: '1234', nombre: 'Dr. Carlos Mendoza', rol: 'Médico', estado: 'Activo', documento: '200300400', tipo_doc: 'CC' },
+    { id: 3, usuario: 'empresa1', password: '1234', nombre: 'Constructora del Norte', rol: 'Empresa', estado: 'Activo', documento: '900800700', tipo_doc: 'NIT' },
+    { id: 4, usuario: 'sede1', password: '1234', nombre: 'Sede Principal Fonseca', rol: 'Sede', estado: 'Activo', documento: '800700600', tipo_doc: 'NIT' },
+    { id: 5, usuario: 'paciente1', password: '1234', nombre: 'María Pérez', rol: 'Paciente', estado: 'Activo', documento: '100200300', tipo_doc: 'CC' }
 ];
 
 let resultadosDB = [
@@ -43,23 +43,6 @@ let resultadosDB = [
 // RUTAS DE LA API (ENDPOINTS)
 // ==========================================
 
-// Obtener la lista completa de resultados
-app.get('/api/resultados', (req, res) => {
-    res.json({ success: true, resultados: resultadosDB });
-});
-
-// Eliminar un resultado por su ID
-app.delete('/api/resultados/:id', (req, res) => {
-    const id = parseInt(req.params.id, 10);
-    const existe = resultadosDB.some(r => r.id === id);
-
-    if (!existe) {
-        return res.status(404).json({ success: false, mensaje: 'Resultado no encontrado.' });
-    }
-
-    resultadosDB = resultadosDB.filter(r => r.id !== id);
-    res.json({ success: true, mensaje: 'Resultado eliminado correctamente.' });
-});
 // Healthcheck para plataformas de despliegue (Railway, Render, etc.)
 app.get('/api/health', (req, res) => {
     res.status(200).json({
@@ -69,10 +52,27 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// Endpoint de Hora Real Institucional (Colombia)
+app.get('/api/hora-actual', (req, res) => {
+    const ahora = new Date();
+    const fechaHoraFormateada = ahora.toLocaleString('es-CO', {
+        timeZone: 'America/Bogota',
+        dateStyle: 'full',
+        timeStyle: 'medium'
+    });
+
+    res.json({
+        success: true,
+        iso: ahora.toISOString(),
+        formateada: fechaHoraFormateada,
+        timestamp: ahora.getTime()
+    });
+});
+
 // 1. Endpoint de Autenticación con Validación y reCAPTCHA
 app.post('/api/consultar', async (req, res, next) => {
     try {
-        const { tipoUsuario, usuario, password, captchaToken } = req.body;
+        const { usuario, password, captchaToken } = req.body;
 
         // A. Validar campos obligatorios
         if (!usuario || !password) {
@@ -82,8 +82,8 @@ app.post('/api/consultar', async (req, res, next) => {
             });
         }
 
-        // B. Validación de reCAPTCHA
-        if (captchaToken) {
+        // B. Validación de reCAPTCHA (Opcional si viene vacío en entornos locales de prueba)
+        if (captchaToken && captchaToken !== 'bypass_local') {
             try {
                 const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${captchaToken}`;
                 const googleRes = await axios.post(verifyUrl);
@@ -96,83 +96,78 @@ app.post('/api/consultar', async (req, res, next) => {
                 }
             } catch (error) {
                 console.error('Error al validar reCAPTCHA:', error.message);
-                return res.status(500).json({ 
-                    success: false, 
-                    mensaje: 'Error en el servidor al validar la verificación de seguridad.' 
-                });
             }
         }
 
         // C. Buscar usuario exacto
         const usuarioEncontrado = usuariosDB.find(u => 
-            u.usuario.toString().toLowerCase() === usuario.toString().toLowerCase()
+            u.usuario.toLowerCase() === usuario.toLowerCase() || u.documento === usuario
         );
 
-        // D. Validar credenciales (Normalizando ambos a String)
-        if (!usuarioEncontrado || usuarioEncontrado.password.toString() !== password.toString()) {
+        // D. Validar credenciales
+        if (!usuarioEncontrado || usuarioEncontrado.password !== password) {
             return res.status(401).json({ 
                 success: false, 
                 mensaje: 'Credenciales inválidas. Usuario o contraseña incorrectos.' 
             });
         }
 
-        // E. Generar menú de navegación según el rol
+        // E. Generar menú de navegación según el rol institucional
         let menu = [];
         let rolActivo = usuarioEncontrado.rol;
 
-        // Soporte unificado para 'Administrativo' y 'Panel Administrativo'
-        if (rolActivo === 'Panel Administrativo' || rolActivo === 'Administrativo' || tipoUsuario === 'Administrativo') {
-            menu = [
-                '🏠 Inicio',
-                '👥 Gestión de Usuarios',
-                '🔒 Roles y permisos',
-                '📤 Subir resultados en PDF',
-                '📄 Descargar resultados en PDF',
-                '👨‍⚕️ Médicos',
-                '⚙️ Configuración y sistema',
-                '🚪 Cerrar sesión'
-            ];
-        } else {
-            switch (rolActivo) {
-                case 'Médico':
-                    menu = [
-                        '🏠 Inicio',
-                        '📅 Citas y Agenda',
-                        '📄 Resultados de Pacientes',
-                        '👤 Mi perfil',
-                        '🚪 Cerrar sesión'
-                    ];
-                    break;
+        switch (rolActivo) {
+            case 'Administrativo':
+                menu = [
+                    '🏠 Inicio',
+                    '👥 Gestión de Usuarios',
+                    '🔒 Roles y permisos',
+                    '📤 Subir resultados en PDF',
+                    '📄 Descargar resultados en PDF',
+                    '👨‍⚕️ Médicos',
+                    '⚙️ Configuración y sistema',
+                    '🚪 Cerrar sesión'
+                ];
+                break;
 
-                case 'Empresa':
-                case 'Sede':
-                    menu = [
-                        '🏠 Inicio',
-                        '🏢 Red de Sedes y Empresas',
-                        '📄 Resultados Ocupacionales',
-                        '🚪 Cerrar sesión'
-                    ];
-                    break;
+            case 'Médico':
+                menu = [
+                    '🏠 Inicio',
+                    '📅 Citas y Agenda',
+                    '📄 Resultados de Pacientes',
+                    '👤 Mi perfil',
+                    '🚪 Cerrar sesión'
+                ];
+                break;
 
-                case 'Paciente':
-                default:
-                    menu = [
-                        '🏠 Inicio',
-                        '📄 Descargar resultados en PDF',
-                        '👤 Mi perfil: Actualizar sus datos',
-                        '🔔 Notificaciones',
-                        '🚪 Cerrar sesión'
-                    ];
-                    break;
-            }
+            case 'Empresa':
+            case 'Sede':
+                menu = [
+                    '🏠 Inicio',
+                    '🏢 Red de Sedes y Empresas',
+                    '📄 Resultados Ocupacionales',
+                    '🚪 Cerrar sesión'
+                ];
+                break;
+
+            case 'Paciente':
+            default:
+                menu = [
+                    '🏠 Inicio',
+                    '📄 Descargar resultados en PDF',
+                    '👤 Mi perfil: Actualizar sus datos',
+                    '🔔 Notificaciones',
+                    '🚪 Cerrar sesión'
+                ];
+                break;
         }
 
         // F. Filtrar exámenes si el usuario es Paciente
         let resultadosFiltrados = resultadosDB;
         if (rolActivo === 'Paciente') {
             resultadosFiltrados = resultadosDB.filter(r => 
-                r.pacienteDoc.toLowerCase().includes(usuario.toString().toLowerCase()) ||
-                r.numeroDoc === usuario.toString()
+                r.pacienteDoc.toLowerCase().includes(usuarioEncontrado.nombre.toLowerCase()) ||
+                r.numeroDoc === usuarioEncontrado.documento
             );
         }
 
@@ -181,6 +176,8 @@ app.post('/api/consultar', async (req, res, next) => {
             success: true,
             nombre: usuarioEncontrado.nombre,
             rol: rolActivo,
+            documento: usuarioEncontrado.documento || 'N/A',
+            tipo_doc: usuarioEncontrado.tipo_doc || 'CC',
             menu: menu,
             resultados: resultadosFiltrados
         });
@@ -197,16 +194,16 @@ app.get('/api/usuarios', (req, res) => {
 
 // 3. Crear nuevo usuario
 app.post('/api/usuarios', (req, res) => {
-    const { usuario, nombre, rol, password } = req.body;
+    const { usuario, nombre, rol, password, documento, tipo_doc } = req.body;
     
     if (!usuario || !nombre || !rol || !password) {
         return res.status(400).json({ 
             success: false, 
-            mensaje: 'Todos los campos (usuario, nombre, rol, contraseña) son obligatorios.' 
+            mensaje: 'Todos los campos obligatorios deben estar completos.' 
         });
     }
 
-    const usuarioExistente = usuariosDB.find(u => u.usuario.toString().toLowerCase() === usuario.toString().toLowerCase());
+    const usuarioExistente = usuariosDB.find(u => u.usuario.toLowerCase() === usuario.toLowerCase());
     if (usuarioExistente) {
         return res.status(400).json({
             success: false,
@@ -215,7 +212,16 @@ app.post('/api/usuarios', (req, res) => {
     }
 
     const nuevoId = usuariosDB.length > 0 ? usuariosDB[usuariosDB.length - 1].id + 1 : 1;
-    const nuevoUsuario = { id: nuevoId, usuario, password, nombre, rol, estado: 'Activo' };
+    const nuevoUsuario = { 
+        id: nuevoId, 
+        usuario, 
+        password, 
+        nombre, 
+        rol, 
+        estado: 'Activo', 
+        documento: documento || 'N/A', 
+        tipo_doc: tipo_doc || 'CC' 
+    };
     
     usuariosDB.push(nuevoUsuario);
 

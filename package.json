@@ -12,6 +12,19 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^4.22.2",
-    "multer": "^2.2.0"
-  }
+    "multer": "^2.2.0",
+    "mysql2": "^3.23.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cemsaresultados/cemsa-resultados.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/cemsaresultados/cemsa-resultados/issues"
+  },
+  "homepage": "https://github.com/cemsaresultados/cemsa-resultados#readme"
 }

@@ -197,7 +197,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                                         <tr>
                                             <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: bold;">Panel Administrativo</td>
                                             <td style="padding: 8px; border: 1px solid #cbd5e1; color: #047857;">Total / Global</td>
-                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">Usuarios, Sedes, Subir PDF, Reportes, Auditoría, Configuración</td>
+                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">Usuarios, Sedes, Subir PDF, Descargar PDF, Reportes, Configuración</td>
                                         </tr>
                                         <tr>
                                             <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: bold;">Médico</td>
@@ -212,7 +212,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                                         <tr>
                                             <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: bold;">Paciente</td>
                                             <td style="padding: 8px; border: 1px solid #cbd5e1; color: #64748b;">Básico / Personal</td>
-                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">Descargar Resultados en PDF, Mis Citas</td>
+                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">Descargar resultados en PDF, Mis Citas</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -325,11 +325,61 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                         return;
                     }
 
-                    // 5. INICIO (Rol Paciente / Rol Administrativo)
+                    // 5. DESCARGAR RESULTADOS EN PDF (Habilitado para Paciente y Administrativo)
+                    if (accion.includes('Descargar resultados en PDF')) {
+                        vistaDinamica.innerHTML = `
+                            <h4 style="color: #065f46; margin-top: 0; margin-bottom: 15px;">📋 📄 ${accion}</h4>
+                            <p style="font-size: 0.9rem; color: #475569; margin-bottom: 15px;">Consulte y descargue los reportes de laboratorio en formato PDF disponibles en el sistema:</p>
+                            
+                            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <input type="text" id="filtroDocPdf" placeholder="Ingrese número de documento" style="flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                                <button id="btnBuscarPdf" style="background: #047857; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">🔍 Consultar</button>
+                            </div>
+
+                            <div id="contenedorTablaPdf">
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                        <thead>
+                                            <tr style="background: #f1f5f9; text-align: left;">
+                                                <th style="padding: 8px; border: 1px solid #cbd5e1;">Fecha</th>
+                                                <th style="padding: 8px; border: 1px solid #cbd5e1;">Paciente</th>
+                                                <th style="padding: 8px; border: 1px solid #cbd5e1;">Documento</th>
+                                                <th style="padding: 8px; border: 1px solid #cbd5e1;">Estado</th>
+                                                <th style="padding: 8px; border: 1px solid #cbd5e1;">Acción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyResultadosPdf">
+                                            <tr>
+                                                <td style="padding: 8px; border: 1px solid #cbd5e1;">2026-07-26</td>
+                                                <td style="padding: 8px; border: 1px solid #cbd5e1;">${data.nombre || 'Usuario Activo'}</td>
+                                                <td style="padding: 8px; border: 1px solid #cbd5e1;">${data.usuario || 'N/A'}</td>
+                                                <td style="padding: 8px; border: 1px solid #cbd5e1; color: #047857; font-weight: bold;">🟢 Disponible</td>
+                                                <td style="padding: 8px; border: 1px solid #cbd5e1;">
+                                                    <button onclick="alert('Descargando archivo PDF de resultados...')" style="background: #0284c7; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">📥 Descargar PDF</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+
+                        document.getElementById('btnBuscarPdf').addEventListener('click', async () => {
+                            const nDoc = document.getElementById('filtroDocPdf').value.trim();
+                            if (!nDoc) {
+                                alert('Por favor ingrese un número de documento válido para realizar la búsqueda.');
+                                return;
+                            }
+                            alert(`Buscando registros asociados al documento: ${nDoc}`);
+                        });
+                        return;
+                    }
+
+                    // 6. INICIO
                     if (accion.includes('Inicio')) {
                         vistaDinamica.innerHTML = `
                             <h4 style="color: #065f46; margin-top: 0; margin-bottom: 12px;">🏠 ${accion}</h4>
-                            <p style="font-size: 0.95rem; color: #334155; line-height: 1.5;">Bienvenido al sistema institucional <strong>CEMSA-Resultados</strong>. Desde este panel principal podrá gestionar de forma ágil y segura todas las operaciones correspondientes a su perfil activo.</p>
+                            <p style="font-size: 0.95rem; color: #334155; line-height: 1.5;">Bienvenido al sistema institucional <strong>CEMSA-Resultados</strong>. Desde este panel principal podrá gestionar de forma ágil y segura todas las operaciones correspondientes al su perfil activo.</p>
                             <div style="margin-top: 15px; background: #f8fafc; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px;">
                                 <p style="margin: 0; font-size: 0.9rem; color: #475569;">Seleccione una opción del menú interactivo superior para desplegar los módulos disponibles.</p>
                             </div>
@@ -337,7 +387,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                         return;
                     }
 
-                    // 6. MI PERFIL (Rol Paciente)
+                    // 7. MI PERFIL
                     if (accion.includes('Mi perfil') || accion.includes('Actualizar sus datos')) {
                         vistaDinamica.innerHTML = `
                             <h4 style="color: #065f46; margin-top: 0; margin-bottom: 12px;">👤 Mi perfil: Actualizar sus datos</h4>
@@ -376,7 +426,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                         return;
                     }
 
-                    // 7. NOTIFICACIONES (Rol Paciente)
+                    // 8. NOTIFICACIONES
                     if (accion.includes('Notificaciones')) {
                         vistaDinamica.innerHTML = `
                             <h4 style="color: #065f46; margin-top: 0; margin-bottom: 12px;">🔔 ${accion}</h4>
@@ -393,7 +443,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                         return;
                     }
 
-                    // 8. MÉDICOS (Rol Administrativo)
+                    // 9. MÉDICOS
                     if (accion.includes('Médicos')) {
                         vistaDinamica.innerHTML = `
                             <h4 style="color: #065f46; margin-top: 0; margin-bottom: 12px;">👨‍⚕️ Directorio de ${accion}</h4>
@@ -415,44 +465,16 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                                             <td style="padding: 8px; border: 1px solid #cbd5e1;">RM-45892</td>
                                             <td style="padding: 8px; border: 1px solid #cbd5e1; color: #047857; font-weight: bold;">Activo</td>
                                         </tr>
-                                        <tr>
-                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">Dra. Elena Gómez</td>
-                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">Laboratorio Clínico / Patología</td>
-                                            <td style="padding: 8px; border: 1px solid #cbd5e1;">RM-98213</td>
-                                            <td style="padding: 8px; border: 1px solid #cbd5e1; color: #047857; font-weight: bold;">Activo</td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         `;
                         return;
                     }
-
-                    // Vista genérica / por defecto para otras opciones del menú
-                    vistaDinamica.innerHTML = `
-                        <h4 style="color: #065f46; margin-top: 0; margin-bottom: 12px;">📂 ${accion}</h4>
-                        <p style="font-size: 0.95rem; color: #334155;">Módulo correspondiente a <strong>${accion}</strong> cargado correctamente.</p>
-                        <div style="margin-top: 10px; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <p style="margin: 0; font-size: 0.9rem; color: #64748b;">Información y herramientas de gestión disponibles para este panel.</p>
-                        </div>
-                    `;
                 });
             });
-
-        } else {
-            listaResultados.innerHTML = `
-                <div style="padding: 15px; border: 1px solid #fca5a5; background: #fef2f2; border-radius: 8px; color: #991b1b; font-weight: 500;">
-                    ❌ ${data.mensaje || 'Error al iniciar sesión. Verifique sus credenciales.'}
-                </div>
-            `;
         }
     } catch (error) {
-        console.error('Error al consultar:', error);
-        resultadoContainer.classList.remove('hidden');
-        listaResultados.innerHTML = `
-            <div style="padding: 15px; border: 1px solid #fca5a5; background: #fef2f2; border-radius: 8px; color: #991b1b; font-weight: 500;">
-                🚨 Error de conexión con el servidor. Por favor, intente de nuevo más tarde.
-            </div>
-        `;
+        console.error('Error al procesar la autenticación:', error);
     }
 });
