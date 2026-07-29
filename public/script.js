@@ -355,7 +355,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1;">${data.documento || 'N/A'}</td>
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1; color: #047857; font-weight: bold;">🟢 Disponible</td>
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1;">
-                                                    <button onclick="window.open('/api/generar-pdf/${data.id_usuario}', '_blank')" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+                                                    <button onclick="window.open('/api/generar-pdf/${item.id}', '_blank')" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
     Descargar PDF
 </button>
                                                 </td>
