@@ -32,22 +32,43 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const passwordElement = document.getElementById('password');
     const password = passwordElement ? passwordElement.value.trim() : '';
     
-    const resultadoContainer = document.getElementById('resultadoContainer');
-    const listaResultados = document.getElementById('listaResultados');
+    // Obtener respuesta del reCAPTCHA de Google
+    const recaptchaResponse = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
+
+    if (!recaptchaResponse) {
+        alert('Por favor, confirma que no eres un robot completando el reCAPTCHA.');
+        return;
+    }
 
     try {
         const respuesta = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tipoUsuario, usuario, password })
+            body: JSON.stringify({ tipoUsuario, usuario, password, 'g-recaptcha-response': recaptchaResponse })
         });
 
         const resultado = await respuesta.json();
         
         if (resultado.success) {
-            window.location.href = resultado.redirectUrl;
+            if (resultado.redirectUrl) {
+                window.location.href = resultado.redirectUrl;
+            } else {
+                // Si la consulta es de un paciente u otro rol que muestra resultados en la misma página
+                const resultadoContainer = document.getElementById('resultadoContainer');
+                const listaResultados = document.getElementById('listaResultados');
+                
+                if (resultadoContainer && listaResultados) {
+                    resultadoContainer.style.setProperty('display', 'block', 'important');
+                    resultadoContainer.classList.remove('hidden', 'd-none');
+                    listaResultados.innerHTML = resultado.html || '<p>Resultados cargados exitosamente.</p>';
+                    resultadoContainer.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
         } else {
-            alert(resultado.message || 'Error al iniciar sesión');
+            alert(resultado.message || 'Error al iniciar sesión o credenciales incorrectas');
+            if (typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset(); // Reinicia el captcha si falla
+            }
         }
     } catch (error) {
         console.error('Error en el login:', error);
@@ -55,7 +76,9 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     }
 });
 
-// Control preciso para mostrar la sección de descarga de PDF al hacer clic
+// ==========================================
+// 3. CONTROL PARA EL VISOR DE PDF / RESULTADOS
+// ==========================================
 document.addEventListener('click', function(e) {
     const target = e.target;
     if (target.closest('#menuDescargarPdf') || (target.textContent && target.textContent.includes('Descargar resultados en PDF'))) {
@@ -513,4 +536,3 @@ document.addEventListener('click', function(e) {
     } catch (error) {
         console.error('Error al procesar la autenticación:', error);
     }
-});
