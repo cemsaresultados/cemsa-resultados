@@ -39,15 +39,16 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     if (e.target.closest('#menuDescargarPdf') || (e.target.textContent && e.target.textContent.includes('Descargar resultados en PDF'))) {
         e.preventDefault();
         
-        // Apunta al ID real que tienes en tu HTML
         const seccionPdf = document.getElementById('resultadoContainer');
         
         if (seccionPdf) {
-            seccionPdf.classList.remove('hidden'); // Quita la clase que lo oculta
-            seccionPdf.style.display = 'block';    // Asegura que se muestre
+            // Forzar visualización ignorando cualquier otra regla CSS
+            seccionPdf.classList.remove('hidden', 'd-none');
+            seccionPdf.style.setProperty('display', 'block', 'important');
             seccionPdf.scrollIntoView({ behavior: 'smooth' });
+            console.log('Contenedor mostrado correctamente');
         } else {
-            console.log('No se encontró el contenedor resultadoContainer');
+            alert('No se encontró el elemento resultadoContainer en el DOM');
         }
     }
 });
