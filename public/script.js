@@ -35,15 +35,27 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const resultadoContainer = document.getElementById('resultadoContainer');
     const listaResultados = document.getElementById('listaResultados');
 
-    document.addEventListener('click', function(e) {
-    if (e.target.closest('#menuDescargarPdf') || (e.target.textContent && e.target.textContent.includes('Descargar resultados en PDF'))) {
-        e.preventDefault();
+    try {
+        const respuesta = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tipoUsuario, usuario, password })
+        });
+
+        const resultado = await respuesta.json();
         
-        // Rastreador global para ver exactamente qué se está tocando en la página
-document.addEventListener('click', function(e) {
-    console.log("Hiciste clic en:", e.target); // Muestra el elemento exacto al que le diste clic en la consola
-    
-    // Control preciso para mostrar la sección de descarga de PDF sin afectar otras funciones
+        if (resultado.success) {
+            window.location.href = resultado.redirectUrl;
+        } else {
+            alert(resultado.message || 'Error al iniciar sesión');
+        }
+    } catch (error) {
+        console.error('Error en el login:', error);
+        alert('No se pudo conectar con el servidor');
+    }
+});
+
+// Control preciso para mostrar la sección de descarga de PDF al hacer clic
 document.addEventListener('click', function(e) {
     const target = e.target;
     if (target.closest('#menuDescargarPdf') || (target.textContent && target.textContent.includes('Descargar resultados en PDF'))) {
