@@ -35,20 +35,19 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const resultadoContainer = document.getElementById('resultadoContainer');
     const listaResultados = document.getElementById('listaResultados');
 
-    // Control definitivo para mostrar la sección de descarga de PDF
-document.addEventListener('click', function(e) {
-    // Detecta si se hizo clic en el menú por su ID o por su texto exacto
-    const botonPdf = e.target.closest('#menuDescargarPdf') || 
-                     (e.target.textContent && e.target.textContent.includes('Descargar resultados en PDF'));
-    
-    if (botonPdf) {
+    document.addEventListener('click', function(e) {
+    if (e.target.closest('#menuDescargarPdf') || (e.target.textContent && e.target.textContent.includes('Descargar resultados en PDF'))) {
         e.preventDefault();
         
-        const seccionPdf = document.getElementById('seccionPdf') || document.querySelector('.seccion-pdf');
+        // Apunta al ID real que tienes en tu HTML
+        const seccionPdf = document.getElementById('resultadoContainer');
+        
         if (seccionPdf) {
-            seccionPdf.style.display = 'block';
+            seccionPdf.classList.remove('hidden'); // Quita la clase que lo oculta
+            seccionPdf.style.display = 'block';    // Asegura que se muestre
+            seccionPdf.scrollIntoView({ behavior: 'smooth' });
         } else {
-            console.log('Se encontró el clic en el menú, pero falta el ID "seccionPdf" en el HTML.');
+            console.log('No se encontró el contenedor resultadoContainer');
         }
     }
 });
