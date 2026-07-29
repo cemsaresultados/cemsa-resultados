@@ -352,10 +352,12 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                                             <tr>
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1;">2026-07-26</td>
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1;">${data.nombre || 'Usuario Activo'}</td>
-                                                <td style="padding: 8px; border: 1px solid #cbd5e1;">${data.usuario || 'N/A'}</td>
+                                                <td style="padding: 8px; border: 1px solid #cbd5e1;">${data.documento || 'N/A'}</td>
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1; color: #047857; font-weight: bold;">🟢 Disponible</td>
                                                 <td style="padding: 8px; border: 1px solid #cbd5e1;">
-                                                    <button onclick="alert('Descargando archivo PDF de resultados...')" style="background: #0284c7; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">📥 Descargar PDF</button>
+                                                    <button onclick="window.open('/api/generar-pdf/${data.id_usuario}', '_blank')" style="background: #2563eb; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
+    Descargar PDF
+</button>
                                                 </td>
                                             </tr>
                                         </tbody>

@@ -296,6 +296,71 @@ app.use((err, req, res, next) => {
 // ==========================================
 // INICIALIZACIÓN DEL SERVIDOR
 // ==========================================
+const PDFDocument = require('pdfkit');
+
+// Ruta del servidor para generar el PDF de forma limpia y nativa
+app.get('/api/generar-pdf/:id', (req, res) => {
+    try {
+        const resultadoId = req.params.id;
+
+        // Crear un documento PDF tamaño Carta (Letter)
+        const doc = new PDFDocument({ size: 'LETTER', margin: 50 });
+
+        // Configurar las cabeceras para que se abra en una pestaña nueva
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename=resultado-${resultadoId}.pdf`);
+
+        // Enviar el flujo del PDF a la respuesta HTTP
+        doc.pipe(res);
+
+        // --- ENCABEZADO INSTITUCIONAL ---
+        doc.fontSize(20).fillColor('#047857').text('Centro Médico San Agustín', { align: 'center' });
+        doc.fontSize(12).fillColor('#4b5563').text('CEMSA Resultados - Reporte de Laboratorio', { align: 'center' });
+        doc.moveDown(1.5);
+
+        // --- CUADRO DE DATOS GENERALES ---
+        doc.rect(50, doc.y, 512, 50).fillAndStroke('#f3f4f6', '#d1d5db');
+        let currentY = doc.y + 10;
+        doc.fillColor('#111827').fontSize(10).text(`ID de Examen: #${resultadoId}`, 60, currentY);
+        doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString()}`, 320, currentY);
+        doc.moveDown(2);
+
+        // --- DETALLE DE EXÁMENES ---
+        doc.fontSize(14).fillColor('#047857').text('Resultados Clínicos', { underline: true });
+        doc.moveDown(0.5);
+
+        // Tabla simple simulada con texto alineado
+        doc.fontSize(10).fillColor('#374151');
+        doc.text('Prueba / Análisis', 50, doc.y, { continued: true });
+        doc.text('Resultado', 250, doc.y, { continued: true });
+        doc.text('Valores de Referencia', 400, doc.y);
+        doc.moveDown(0.5);
+
+        // Línea divisoria
+        doc.moveTo(50, doc.y).lineTo(562, doc.y).strokeColor('#e5e7eb').stroke();
+        doc.moveDown(0.5);
+
+        doc.text('Hemoglobina', 50, doc.y, { continued: true });
+        doc.text('14.2 g/dL', 250, doc.y, { continued: true });
+        doc.text('13.5 - 17.5 g/dL', 400, doc.y);
+        doc.moveDown(0.8);
+
+        doc.text('Glucosa en ayunas', 50, doc.y, { continued: true });
+        doc.text('90 mg/dL', 250, doc.y, { continued: true });
+        doc.text('70 - 99 mg/dL', 400, doc.y);
+        doc.moveDown(3);
+
+        // --- PIE DE PÁGINA ---
+        doc.fontSize(9).fillColor('#9ca3af').text('Este documento es una representación digital generada automáticamente por CEMSA Resultados.', 50, 700, { align: 'center', width: 512 });
+
+        // Finalizar documento
+        doc.end();
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, mensaje: 'Error al generar el PDF en el servidor.' });
+    }
+});
 app.listen(PORT, () => {
     console.log(`===============================================`);
     console.log(`🚀 Servidor CEMSA-Resultados activo en puerto ${PORT}`);
