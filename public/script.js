@@ -35,18 +35,20 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const resultadoContainer = document.getElementById('resultadoContainer');
     const listaResultados = document.getElementById('listaResultados');
 
-    document.addEventListener('click', function(e) {
-    // Busca si el elemento clickeado o su contenedor es el botón del menú
-    const target = e.target.closest('a, button, li');
-    if (target && target.textContent.includes('Descargar resultados en PDF')) {
+    // Control definitivo para mostrar la sección de descarga de PDF
+document.addEventListener('click', function(e) {
+    // Detecta si se hizo clic en el menú por su ID o por su texto exacto
+    const botonPdf = e.target.closest('#menuDescargarPdf') || 
+                     (e.target.textContent && e.target.textContent.includes('Descargar resultados en PDF'));
+    
+    if (botonPdf) {
         e.preventDefault();
         
-        // Busca la sección de descarga de PDF en la página y muéstrala
         const seccionPdf = document.getElementById('seccionPdf') || document.querySelector('.seccion-pdf');
         if (seccionPdf) {
             seccionPdf.style.display = 'block';
         } else {
-            console.log('Se encontró el clic en el menú, falta asegurar el ID de la sección de destino.');
+            console.log('Se encontró el clic en el menú, pero falta el ID "seccionPdf" en el HTML.');
         }
     }
 });
