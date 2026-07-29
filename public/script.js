@@ -35,15 +35,21 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const resultadoContainer = document.getElementById('resultadoContainer');
     const listaResultados = document.getElementById('listaResultados');
 
-    const menuDescargarPdf = document.getElementById('menuDescargarPdf'); 
-const seccionPdf = document.getElementById('seccionPdf'); 
-
-if (menuDescargarPdf && seccionPdf) {
-    menuDescargarPdf.addEventListener('click', (e) => {
+    document.addEventListener('click', function(e) {
+    // Busca si el elemento clickeado o su contenedor es el botón del menú
+    const target = e.target.closest('a, button, li');
+    if (target && target.textContent.includes('Descargar resultados en PDF')) {
         e.preventDefault();
-        seccionPdf.style.display = 'block';
-    });
-}
+        
+        // Busca la sección de descarga de PDF en la página y muéstrala
+        const seccionPdf = document.getElementById('seccionPdf') || document.querySelector('.seccion-pdf');
+        if (seccionPdf) {
+            seccionPdf.style.display = 'block';
+        } else {
+            console.log('Se encontró el clic en el menú, falta asegurar el ID de la sección de destino.');
+        }
+    }
+});
 
     try {
         const response = await fetch('/api/consultar', {
