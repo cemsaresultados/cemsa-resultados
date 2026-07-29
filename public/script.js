@@ -35,6 +35,16 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const resultadoContainer = document.getElementById('resultadoContainer');
     const listaResultados = document.getElementById('listaResultados');
 
+    const menuDescargarPdf = document.getElementById('menuDescargarPdf'); 
+const seccionPdf = document.getElementById('seccionPdf'); 
+
+if (menuDescargarPdf && seccionPdf) {
+    menuDescargarPdf.addEventListener('click', (e) => {
+        e.preventDefault();
+        seccionPdf.style.display = 'block';
+    });
+}
+
     try {
         const response = await fetch('/api/consultar', {
             method: 'POST',
