@@ -43,17 +43,16 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
 document.addEventListener('click', function(e) {
     console.log("Hiciste clic en:", e.target); // Muestra el elemento exacto al que le diste clic en la consola
     
-    // Si contiene el texto o es el botón, abre el contenedor por la fuerza
-    if (e.target.innerText && e.target.innerText.includes('Descargar resultados')) {
+    // Control preciso para mostrar la sección de descarga de PDF sin afectar otras funciones
+document.addEventListener('click', function(e) {
+    const target = e.target;
+    if (target.closest('#menuDescargarPdf') || (target.textContent && target.textContent.includes('Descargar resultados en PDF'))) {
         e.preventDefault();
         const seccionPdf = document.getElementById('resultadoContainer');
         if (seccionPdf) {
             seccionPdf.style.setProperty('display', 'block', 'important');
             seccionPdf.classList.remove('hidden', 'd-none');
             seccionPdf.scrollIntoView({ behavior: 'smooth' });
-            alert('¡Clic detectado y contenedor abierto!');
-        } else {
-            alert('Se detectó el clic, pero no existe el elemento #resultadoContainer');
         }
     }
 });
