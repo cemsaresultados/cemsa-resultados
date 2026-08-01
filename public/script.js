@@ -822,8 +822,3 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
                                         <input type="password" id="perfilPassword" placeholder="Dejar en blanco para mantener" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
 
                                     </div>
-
-                                </div>
-
-                                <button type="submit" style="background: #047857; color: white; border: none; padding: 10px; border-radius: 6px; font-w 
-
